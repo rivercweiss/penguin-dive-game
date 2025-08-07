@@ -161,7 +161,8 @@ void test_visual_rendering_integration(void) {
     // Draw pillars
     for (int i = 0; i < MAX_PILLARS; i++) {
         ice_pillar_t* pillar = ice_pillars_get_pillar(&pillars_ctx, i);
-        if (pillar && pillar->active) {
+        // Only draw if pillar is active and has nonzero height
+        if (pillar && pillar->active && pillar->top_height > 0 && pillar->bottom_height > 0) {
             int pillar_x = (int)pillar->x;
             
             // Draw top pillar

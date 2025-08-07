@@ -1,5 +1,0 @@
-/Users/riverweiss/esp/penguin-dive-game/simulator/build/CMakeFiles/penguin_simulator.dir
-/Users/riverweiss/esp/penguin-dive-game/simulator/build/CMakeFiles/penguin_simulator_tests.dir
-/Users/riverweiss/esp/penguin-dive-game/simulator/build/CMakeFiles/test.dir
-/Users/riverweiss/esp/penguin-dive-game/simulator/build/CMakeFiles/edit_cache.dir
-/Users/riverweiss/esp/penguin-dive-game/simulator/build/CMakeFiles/rebuild_cache.dir

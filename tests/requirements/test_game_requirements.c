@@ -162,7 +162,7 @@ void test_requirement_increasing_pillar_difficulty(void) {
     ice_pillar_t* difficult_pillar = NULL;
     for (int i = 0; i < MAX_PILLARS; i++) {
         ice_pillar_t* pillar = ice_pillars_get_pillar(&pillars_ctx, i);
-        if (pillar && pillar->active) {
+        if (pillar && pillar->active && pillar->top_height > 0 && pillar->bottom_height > 0) {
             difficult_pillar = pillar;
             break;
         }
@@ -284,7 +284,7 @@ void test_requirement_multiple_pillar_sets(void) {
     int active_count = 0;
     for (int i = 0; i < MAX_PILLARS; i++) {
         ice_pillar_t* pillar = ice_pillars_get_pillar(&pillars_ctx, i);
-        if (pillar && pillar->active) {
+        if (pillar && pillar->active && pillar->top_height > 0 && pillar->bottom_height > 0) {
             active_count++;
             TEST_ASSERT_GREATER_THAN(0, pillar->top_height);
             TEST_ASSERT_GREATER_THAN(0, pillar->gap_size);

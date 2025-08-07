@@ -1,10 +1,10 @@
 #include "penguin_physics.h"
 #include <string.h>
 
-#define GRAVITY 0.3f
-#define DIVE_FORCE 8.0f
-#define RISE_FORCE 0.8f
-#define MAX_VELOCITY 8.0f
+#define GRAVITY 0.12f
+#define DIVE_FORCE 6.0f
+#define RISE_FORCE 1.5f
+#define MAX_VELOCITY 3.5f
 #define PENGUIN_START_X (SCREEN_WIDTH / 6.0f)
 #define PENGUIN_START_Y (SCREEN_HEIGHT / 2.0f)
 
@@ -41,6 +41,8 @@ void penguin_physics_update(penguin_t* penguin, bool button_pressed) {
     
     // Apply physics
     penguin->velocity_y += penguin->acceleration_y;
+    // Add velocity damping for more control
+    penguin->velocity_y *= 0.92f;
     
     // Clamp velocity
     if (penguin->velocity_y > MAX_VELOCITY) {
@@ -59,10 +61,10 @@ void penguin_physics_update(penguin_t* penguin, bool button_pressed) {
 void penguin_physics_apply_dive_force(penguin_t* penguin, float force) {
     if (!penguin) return;
     
-    // Diving force pulls penguin down
-    penguin->acceleration_y = GRAVITY + (force * 0.1f);
+    // Diving force pulls penguin down - even less strong for easier control
+    penguin->acceleration_y = GRAVITY + (force * 0.05f);
     
-    // Immediate velocity boost for responsive controls
+    // Immediate velocity boost for responsive controls - less strong
     if (!penguin->was_button_pressed && penguin->button_pressed) {
         penguin->velocity_y += force * 0.5f;
     }
@@ -71,12 +73,12 @@ void penguin_physics_apply_dive_force(penguin_t* penguin, float force) {
 void penguin_physics_apply_rise_force(penguin_t* penguin) {
     if (!penguin) return;
     
-    // Rising force opposes gravity - should be negative to go up
+    // Rising force opposes gravity - even stronger for easier rising
     penguin->acceleration_y = -(RISE_FORCE - GRAVITY);
     
-    // Slight upward velocity when button released
+    // Much stronger upward velocity when button released for better control
     if (penguin->was_button_pressed && !penguin->button_pressed) {
-        penguin->velocity_y -= RISE_FORCE * 2.0f;
+        penguin->velocity_y -= RISE_FORCE * 4.0f;
     }
 }
 

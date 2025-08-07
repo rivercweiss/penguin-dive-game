@@ -81,8 +81,8 @@ void game_engine_update_score(game_context_t* ctx) {
     // Score increases based on time survived (frame count)
     ctx->score = ctx->frame_count / 60; // Assuming 60 FPS, score = seconds survived
     
-    // Update difficulty based on score
-    ctx->difficulty_multiplier = 1.0f + (ctx->score * 0.1f);
+    // Update difficulty based on score - reduced scaling for easier gameplay
+    ctx->difficulty_multiplier = 1.0f + (ctx->score * 0.05f);
 }
 
 float game_engine_get_difficulty_multiplier(game_context_t* ctx) {

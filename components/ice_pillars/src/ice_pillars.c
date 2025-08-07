@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define BASE_SCROLL_SPEED 1.0f
+#define BASE_SCROLL_SPEED 0.8f
 #define BASE_SPAWN_INTERVAL 480
 
 static uint32_t pseudo_random_seed = 12345;
@@ -77,7 +77,7 @@ void ice_pillars_spawn_pillar(ice_pillars_context_t* ctx) {
             ice_pillar_t* pillar = &ctx->pillars[i];
             
             pillar->x = SCREEN_WIDTH;
-            pillar->gap_size = get_random_gap_size() - (int)(ctx->difficulty_multiplier * 5); // Smaller gaps as difficulty increases
+            pillar->gap_size = get_random_gap_size() - (int)(ctx->difficulty_multiplier * 2); // Reduced difficulty scaling for easier gameplay
             if (pillar->gap_size < MIN_GAP_SIZE) pillar->gap_size = MIN_GAP_SIZE;
             
             int gap_y = get_random_gap_position(pillar->gap_size);

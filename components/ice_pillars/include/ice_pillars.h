@@ -7,8 +7,8 @@
 #define SCREEN_HEIGHT 240
 #define MAX_PILLARS 4
 #define PILLAR_WIDTH 30
-#define MIN_GAP_SIZE 60
-#define MAX_GAP_SIZE 80
+#define MIN_GAP_SIZE 80
+#define MAX_GAP_SIZE 100
 #define PILLAR_SPACING 80
 
 typedef struct {

@@ -40,7 +40,8 @@ static void draw_game_objects(display_context_t* display_ctx,
     // Draw pillars
     for (int i = 0; i < MAX_PILLARS; i++) {
         ice_pillar_t* pillar = ice_pillars_get_pillar(pillars_ctx, i);
-        if (pillar && pillar->active) {
+        // Only draw if pillar is active and has nonzero height
+        if (pillar && pillar->active && pillar->top_height > 0 && pillar->bottom_height > 0) {
             int pillar_x = (int)pillar->x;
             
             // Draw top pillar with border
@@ -65,8 +66,8 @@ static void draw_game_objects(display_context_t* display_ctx,
     // Draw penguin belly (white)
     display_driver_draw_rectangle(display_ctx, penguin_x + 2, penguin_y + 2, PENGUIN_WIDTH - 4, PENGUIN_HEIGHT - 4, COLOR_WHITE);
     
-    // Draw penguin beak (orange/yellow)
-    display_driver_draw_rectangle(display_ctx, penguin_x + PENGUIN_WIDTH, penguin_y + PENGUIN_HEIGHT/2 - 1, 3, 2, COLOR_YELLOW);
+    // Draw penguin beak (orange/yellow) - fixed to be inside penguin bounds
+    display_driver_draw_rectangle(display_ctx, penguin_x + PENGUIN_WIDTH - 3, penguin_y + PENGUIN_HEIGHT/2 - 1, 3, 2, COLOR_YELLOW);
     
     // Draw score (simple text representation)
     char score_text[32];

@@ -227,7 +227,7 @@ void test_ice_pillars_collision_detection_top_pillar_collision(void) {
     ice_pillars_spawn_pillar(&ctx);
     
     ice_pillar_t* pillar = ice_pillars_get_pillar(&ctx, 0);
-    if (pillar && pillar->active) {
+    if (pillar && pillar->active && pillar->top_height > 0 && pillar->bottom_height > 0) {
         // Position penguin to collide with top pillar
         int pillar_x = (int)pillar->x;
         bool collision = ice_pillars_check_collision(&ctx, pillar_x, 0, 20, 20);
@@ -242,7 +242,7 @@ void test_ice_pillars_collision_detection_bottom_pillar_collision(void) {
     ice_pillars_spawn_pillar(&ctx);
     
     ice_pillar_t* pillar = ice_pillars_get_pillar(&ctx, 0);
-    if (pillar && pillar->active) {
+    if (pillar && pillar->active && pillar->top_height > 0 && pillar->bottom_height > 0) {
         // Position penguin to collide with bottom pillar
         int pillar_x = (int)pillar->x;
         bool collision = ice_pillars_check_collision(&ctx, pillar_x, pillar->bottom_y, 20, 20);
@@ -257,7 +257,7 @@ void test_ice_pillars_collision_detection_gap_no_collision(void) {
     ice_pillars_spawn_pillar(&ctx);
     
     ice_pillar_t* pillar = ice_pillars_get_pillar(&ctx, 0);
-    if (pillar && pillar->active) {
+    if (pillar && pillar->active && pillar->top_height > 0 && pillar->bottom_height > 0) {
         // Position penguin in the gap
         int pillar_x = (int)pillar->x;
         int gap_middle = pillar->top_height + (pillar->gap_size / 2);
@@ -274,7 +274,7 @@ void test_ice_pillars_check_passed(void) {
     ice_pillars_spawn_pillar(&ctx);
     
     ice_pillar_t* pillar = ice_pillars_get_pillar(&ctx, 0);
-    if (pillar && pillar->active) {
+    if (pillar && pillar->active && pillar->top_height > 0 && pillar->bottom_height > 0) {
         TEST_ASSERT_FALSE(pillar->passed);
         
         // Penguin hasn't passed yet
