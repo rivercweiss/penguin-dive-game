@@ -1,4 +1,5 @@
 {
   "C_Cpp.intelliSenseEngine": "default",
-  "idf.port": "/dev/tty.usbserial-7D5249AD03"
+  "idf.port": "/dev/tty.usbserial-7D5249AD03",
+  "idf.flashBaudRate": "1500000"
 }

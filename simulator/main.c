@@ -115,8 +115,12 @@ static void render_frame(simulator_context_t* sim_ctx, display_context_t* displa
     int pitch;
     
     if (SDL_LockTexture(sim_ctx->texture, NULL, &pixels, &pitch) == 0) {
-        // Copy framebuffer to SDL texture
-        memcpy(pixels, display_ctx->framebuffer, DISPLAY_WIDTH * DISPLAY_HEIGHT * sizeof(uint16_t));
+        // Copy framebuffer to SDL texture row by row
+        for (int y = 0; y < DISPLAY_HEIGHT; y++) {
+            memcpy((uint8_t*)pixels + y * pitch,
+                   (uint8_t*)display_ctx->framebuffer + y * DISPLAY_WIDTH * sizeof(uint16_t),
+                   DISPLAY_WIDTH * sizeof(uint16_t));
+        }
         SDL_UnlockTexture(sim_ctx->texture);
     }
     
@@ -141,7 +145,8 @@ static void draw_game_objects(display_context_t* display_ctx,
     // Draw pillars
     for (int i = 0; i < MAX_PILLARS; i++) {
         ice_pillar_t* pillar = ice_pillars_get_pillar(pillars_ctx, i);
-        if (pillar && pillar->active) {
+        // Only draw if pillar is active and has nonzero height
+        if (pillar && pillar->active && pillar->top_height > 0 && pillar->bottom_height > 0) {
             int pillar_x = (int)pillar->x;
             
             // Draw top pillar with border

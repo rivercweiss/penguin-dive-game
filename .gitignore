@@ -1,0 +1,74 @@
+# Penguin Dive Game - Standard .gitignore
+# Build and output directories
+build/
+build_test_game_engine/
+build_test_penguin_physics/
+build_tests/
+*.o
+*.obj
+*.elf
+*.bin
+*.map
+*.log
+*.out
+*.a
+*.so
+*.dylib
+*.exe
+*.dll
+*.pyc
+*.pyo
+*.pyd
+*.class
+*.swp
+*.swo
+*.swn
+*.bak
+*.tmp
+*.DS_Store
+# CMake
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+# IDE and editor files
+.vscode/
+.idea/
+*.code-workspace
+# Simulator output
+simulator/build/
+# SDK and config
+sdkconfig
+sdkconfig.ci
+sdkconfig.old
+sdkconfig.json
+sdkconfig.h
+sdkconfig.cmake
+config.env
+# Misc
+*.orig
+*.rej
+# Python virtualenv
+venv/
+__pycache__/
+# MacOS
+.DS_Store
+# Test artifacts
+/tests/**/test_*.log
+/tests/**/test_*.out
+/tests/**/test_*.tmp
+# Node/npm
+node_modules/
+# Coverage
+coverage/
+*.gcda
+*.gcno
+*.gcov
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+# Others
+*.sublime-workspace
+*.sublime-project
+# Ignore generated partition tables
+partition_table/

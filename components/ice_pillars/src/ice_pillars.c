@@ -2,8 +2,8 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define BASE_SCROLL_SPEED 2.0f
-#define BASE_SPAWN_INTERVAL 120  // frames (2 seconds at 60 FPS)
+#define BASE_SCROLL_SPEED 1.0f
+#define BASE_SPAWN_INTERVAL 480
 
 static uint32_t pseudo_random_seed = 12345;
 
@@ -31,6 +31,14 @@ void ice_pillars_init(ice_pillars_context_t* ctx) {
     ctx->spawn_interval = BASE_SPAWN_INTERVAL;
     ctx->difficulty_multiplier = 1.0f;
     pseudo_random_seed = 12345; // Reset for consistent testing
+    for (int i = 0; i < MAX_PILLARS; i++) {
+        ctx->pillars[i].active = false;
+        ctx->pillars[i].passed = false;
+        ctx->pillars[i].top_height = 0;
+        ctx->pillars[i].bottom_height = 0;
+        ctx->pillars[i].bottom_y = 0;
+        ctx->pillars[i].x = 0.0f;
+    }
 }
 
 void ice_pillars_update(ice_pillars_context_t* ctx, float difficulty_multiplier) {
@@ -160,6 +168,10 @@ void ice_pillars_reset(ice_pillars_context_t* ctx) {
     for (int i = 0; i < MAX_PILLARS; i++) {
         ctx->pillars[i].active = false;
         ctx->pillars[i].passed = false;
+        ctx->pillars[i].top_height = 0;
+        ctx->pillars[i].bottom_height = 0;
+        ctx->pillars[i].bottom_y = 0;
+        ctx->pillars[i].x = 0.0f;
     }
     ctx->active_count = 0;
     ctx->spawn_timer = 0;

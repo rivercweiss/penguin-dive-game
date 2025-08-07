@@ -85,10 +85,13 @@ void display_driver_draw_rectangle(display_context_t* ctx, int x, int y, int wid
     
     uint16_t* buffer = ctx->back_buffer;
     
+    // Ensure row-major order: buffer[y * width + x]
     for (int row = y; row < y + height; row++) {
         for (int col = x; col < x + width; col++) {
             int index = row * ctx->width + col;
-            buffer[index] = color;
+            if (index >= 0 && index < ctx->width * ctx->height) {
+                buffer[index] = color;
+            }
         }
     }
 }
@@ -146,7 +149,10 @@ uint16_t display_driver_get_pixel(display_context_t* ctx, int x, int y) {
     }
     
     int index = y * ctx->width + x;
-    return ctx->back_buffer[index];
+    if (index >= 0 && index < ctx->width * ctx->height) {
+        return ctx->back_buffer[index];
+    }
+    return 0;
 }
 
 void display_driver_set_pixel(display_context_t* ctx, int x, int y, display_color_t color) {
@@ -157,7 +163,9 @@ void display_driver_set_pixel(display_context_t* ctx, int x, int y, display_colo
     }
     
     int index = y * ctx->width + x;
-    ctx->back_buffer[index] = color;
+    if (index >= 0 && index < ctx->width * ctx->height) {
+        ctx->back_buffer[index] = color;
+    }
 }
 
 bool display_driver_is_initialized(display_context_t* ctx) {
