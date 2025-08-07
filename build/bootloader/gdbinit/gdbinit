@@ -1,0 +1,2 @@
+source /Users/riverweiss/esp/penguin-dive-game/build/bootloader/gdbinit/symbols
+source /Users/riverweiss/esp/penguin-dive-game/build/bootloader/gdbinit/connect

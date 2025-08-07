@@ -1,0 +1,2 @@
+source /Users/riverweiss/esp/penguin-dive-game/build_test_penguin_physics/build/bootloader/gdbinit/symbols
+source /Users/riverweiss/esp/penguin-dive-game/build_test_penguin_physics/build/bootloader/gdbinit/connect
