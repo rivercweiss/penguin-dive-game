@@ -84,6 +84,9 @@ static void draw_game_objects(display_context_t* display_ctx,
     
     // Swap buffers
     display_driver_swap_buffers(display_ctx);
+    
+    // Flush to hardware display
+    display_driver_flush(display_ctx);
 }
 
 void app_main(void)

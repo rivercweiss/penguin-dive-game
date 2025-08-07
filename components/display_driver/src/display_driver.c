@@ -1,6 +1,9 @@
 #include "display_driver.h"
 #include <stdlib.h>
 #include <string.h>
+#include "driver/gpio.h"
+#include "driver/spi_master.h"
+#include "esp_log.h"
 
 bool display_driver_init(display_context_t* ctx) {
     if (!ctx) return false;
@@ -32,6 +35,13 @@ bool display_driver_init(display_context_t* ctx) {
     memset(ctx->back_buffer, 0, buffer_size);
     
     ctx->initialized = true;
+    
+    // Initialize hardware (ST7789 display)
+    if (!st7789_init(ctx)) {
+        ESP_LOGE("DISPLAY", "Failed to initialize ST7789 hardware");
+        // Don't fail completely - allow software-only operation for testing
+    }
+    
     return true;
 }
 
@@ -348,8 +358,10 @@ void display_driver_swap_buffers(display_context_t* ctx) {
 void display_driver_flush(display_context_t* ctx) {
     if (!ctx || !ctx->initialized) return;
     
-    // In a real implementation, this would send the framebuffer to the physical display
-    // For testing purposes, this is a no-op
+    // Send the framebuffer to the physical display if hardware is initialized
+    if (ctx->hardware_initialized) {
+        st7789_write_framebuffer(ctx);
+    }
 }
 
 uint16_t display_driver_get_pixel(display_context_t* ctx, int x, int y) {
@@ -382,4 +394,162 @@ void display_driver_set_pixel(display_context_t* ctx, int x, int y, display_colo
 bool display_driver_is_initialized(display_context_t* ctx) {
     if (!ctx) return false;
     return ctx->initialized && ctx->framebuffer && ctx->back_buffer;
+}
+
+// ST7789 Hardware-specific functions
+
+static const char* TAG = "ST7789";
+
+bool st7789_init(display_context_t* ctx) {
+    if (!ctx) return false;
+    
+    ESP_LOGI(TAG, "Initializing ST7789 display...");
+    
+    // Configure GPIO pins
+    gpio_config_t io_conf = {};
+    io_conf.intr_type = GPIO_INTR_DISABLE;
+    io_conf.mode = GPIO_MODE_OUTPUT;
+    io_conf.pin_bit_mask = (1ULL << ST7789_DC_PIN) | (1ULL << ST7789_RST_PIN) | (1ULL << ST7789_CS_PIN);
+    io_conf.pull_down_en = 0;
+    io_conf.pull_up_en = 0;
+    gpio_config(&io_conf);
+    
+    // Configure SPI bus
+    spi_bus_config_t buscfg = {
+        .mosi_io_num = ST7789_MOSI_PIN,
+        .miso_io_num = -1,  // Not used
+        .sclk_io_num = ST7789_SCLK_PIN,
+        .quadwp_io_num = -1,
+        .quadhd_io_num = -1,
+        .max_transfer_sz = DISPLAY_WIDTH * DISPLAY_HEIGHT * 2,
+    };
+    
+    esp_err_t ret = spi_bus_initialize(ST7789_SPI_HOST, &buscfg, SPI_DMA_CH_AUTO);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "SPI bus initialization failed: %s", esp_err_to_name(ret));
+        return false;
+    }
+    
+    // Configure SPI device
+    spi_device_interface_config_t devcfg = {
+        .clock_speed_hz = ST7789_SPI_CLOCK_SPEED,
+        .mode = 0,  // SPI mode 0
+        .spics_io_num = ST7789_CS_PIN,
+        .queue_size = 7,
+        .flags = SPI_DEVICE_HALFDUPLEX,
+    };
+    
+    ret = spi_bus_add_device(ST7789_SPI_HOST, &devcfg, &ctx->spi_handle);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "SPI device initialization failed: %s", esp_err_to_name(ret));
+        return false;
+    }
+    
+    // Hardware reset
+    gpio_set_level(ST7789_RST_PIN, 0);
+    vTaskDelay(pdMS_TO_TICKS(100));
+    gpio_set_level(ST7789_RST_PIN, 1);
+    vTaskDelay(pdMS_TO_TICKS(100));
+    
+    // Initialize display with commands
+    st7789_send_command(ctx, 0x11);  // Sleep out
+    vTaskDelay(pdMS_TO_TICKS(120));
+    
+    st7789_send_command(ctx, 0x3A);  // Color mode
+    uint8_t color_mode = 0x55;  // 16-bit color
+    st7789_send_data(ctx, &color_mode, 1);
+    
+    st7789_send_command(ctx, 0x36);  // Memory access control
+    uint8_t madctl = 0x00;  // Normal orientation
+    st7789_send_data(ctx, &madctl, 1);
+    
+    st7789_send_command(ctx, 0x2A);  // Column address set
+    uint8_t caset[4] = {0x00, 0x00, 0x00, 0x86};  // 0-134 (135 pixels)
+    st7789_send_data(ctx, caset, 4);
+    
+    st7789_send_command(ctx, 0x2B);  // Row address set
+    uint8_t raset[4] = {0x00, 0x00, 0x00, 0xEF};  // 0-239 (240 pixels)
+    st7789_send_data(ctx, raset, 4);
+    
+    st7789_send_command(ctx, 0x29);  // Display on
+    
+    ctx->hardware_initialized = true;
+    ESP_LOGI(TAG, "ST7789 display initialized successfully");
+    return true;
+}
+
+void st7789_send_command(display_context_t* ctx, uint8_t cmd) {
+    if (!ctx || !ctx->hardware_initialized) return;
+    
+    gpio_set_level(ST7789_DC_PIN, 0);  // Command mode
+    
+    spi_transaction_t trans = {
+        .length = 8,
+        .tx_buffer = &cmd,
+    };
+    
+    esp_err_t ret = spi_device_transmit(ctx->spi_handle, &trans);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "SPI command transmission failed: %s", esp_err_to_name(ret));
+    }
+}
+
+void st7789_send_data(display_context_t* ctx, const uint8_t* data, size_t len) {
+    if (!ctx || !ctx->hardware_initialized || !data) return;
+    
+    gpio_set_level(ST7789_DC_PIN, 1);  // Data mode
+    
+    spi_transaction_t trans = {
+        .length = len * 8,
+        .tx_buffer = data,
+    };
+    
+    esp_err_t ret = spi_device_transmit(ctx->spi_handle, &trans);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "SPI data transmission failed: %s", esp_err_to_name(ret));
+    }
+}
+
+void st7789_set_window(display_context_t* ctx, uint16_t x_start, uint16_t y_start, uint16_t x_end, uint16_t y_end) {
+    if (!ctx || !ctx->hardware_initialized) return;
+    
+    st7789_send_command(ctx, 0x2A);  // Column address set
+    uint8_t caset[4] = {
+        (x_start >> 8) & 0xFF,
+        x_start & 0xFF,
+        (x_end >> 8) & 0xFF,
+        x_end & 0xFF
+    };
+    st7789_send_data(ctx, caset, 4);
+    
+    st7789_send_command(ctx, 0x2B);  // Row address set
+    uint8_t raset[4] = {
+        (y_start >> 8) & 0xFF,
+        y_start & 0xFF,
+        (y_end >> 8) & 0xFF,
+        y_end & 0xFF
+    };
+    st7789_send_data(ctx, raset, 4);
+    
+    st7789_send_command(ctx, 0x2C);  // Memory write
+}
+
+void st7789_write_framebuffer(display_context_t* ctx) {
+    if (!ctx || !ctx->hardware_initialized || !ctx->framebuffer) return;
+    
+    // Set window to full screen
+    st7789_set_window(ctx, 0, 0, DISPLAY_WIDTH - 1, DISPLAY_HEIGHT - 1);
+    
+    // Send framebuffer data
+    gpio_set_level(ST7789_DC_PIN, 1);  // Data mode
+    
+    spi_transaction_t trans = {
+        .length = DISPLAY_WIDTH * DISPLAY_HEIGHT * 16,  // 16 bits per pixel
+        .tx_buffer = ctx->framebuffer,
+    };
+    
+    esp_err_t ret = spi_device_transmit(ctx->spi_handle, &trans);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "Framebuffer transmission failed: %s", esp_err_to_name(ret));
+    }
 }

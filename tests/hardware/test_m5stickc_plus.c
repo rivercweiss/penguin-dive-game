@@ -1,11 +1,20 @@
 #include "unity.h"
 #include "driver/gpio.h"
+#include "esp_log.h"
+#include "sdkconfig.h"
 #include "esp_system.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
+#ifndef portTICK_PERIOD_MS
+#define portTICK_PERIOD_MS (1000 / configTICK_RATE_HZ)
+#endif
+#include "display_driver.h"
+
 // Hardware-specific tests for M5StickC Plus
-#define BUTTON_GPIO GPIO_NUM_37
+#ifndef BUTTON_GPIO
+#define BUTTON_GPIO 37
+#endif
 #define TEST_DELAY_MS 100
 
 void setUp(void) {
@@ -21,7 +30,7 @@ void test_gpio37_button_configuration(void) {
     gpio_config_t io_conf = {
         .pin_bit_mask = (1ULL << BUTTON_GPIO),
         .mode = GPIO_MODE_INPUT,
-        .pull_up_en = GPIO_PULLUP_ENABLE,
+        .pull_up_en = GPIO_PULLUP_DISABLE, // GPIO37 is input-only, no internal PU
         .pull_down_en = GPIO_PULLDOWN_DISABLE,
         .intr_type = GPIO_INTR_DISABLE
     };
@@ -39,7 +48,7 @@ void test_gpio37_button_reading(void) {
     gpio_config_t io_conf = {
         .pin_bit_mask = (1ULL << BUTTON_GPIO),
         .mode = GPIO_MODE_INPUT,
-        .pull_up_en = GPIO_PULLUP_ENABLE,
+        .pull_up_en = GPIO_PULLUP_DISABLE, // GPIO37 is input-only, no internal PU
         .pull_down_en = GPIO_PULLDOWN_DISABLE,
         .intr_type = GPIO_INTR_DISABLE
     };
@@ -49,7 +58,7 @@ void test_gpio37_button_reading(void) {
     int readings[10];
     for (int i = 0; i < 10; i++) {
         readings[i] = gpio_get_level(BUTTON_GPIO);
-        vTaskDelay(pdMS_TO_TICKS(10));
+    vTaskDelay(pdMS_TO_TICKS(10));
     }
     
     // All readings should be consistent (assuming button state doesn't change during test)
@@ -132,6 +141,22 @@ void test_esp32_memory_allocation(void) {
     size_t heap_after_alloc = esp_get_free_heap_size();
     TEST_ASSERT_GREATER_OR_EQUAL(buffer_size, heap_before - heap_after_alloc);
     
+    }
+
+    // Hardware display test: initialize, clear to red, flush
+    void test_display_driver_hardware(void) {
+        display_context_t ctx;
+        bool ok = display_driver_init(&ctx);
+        TEST_ASSERT_TRUE_MESSAGE(ok, "Display driver init failed");
+
+        display_driver_clear_screen(&ctx, COLOR_RED);
+        display_driver_swap_buffers(&ctx);
+        display_driver_flush(&ctx);
+
+        // Optionally, wait to allow visual confirmation
+        vTaskDelay(pdMS_TO_TICKS(1000));
+
+        display_driver_deinit(&ctx);
     // Free memory
     free(test_buffer);
     
@@ -141,6 +166,8 @@ void test_esp32_memory_allocation(void) {
 
 // Simple test task function
 static void test_task_function(void* pvParameters) {
+        // Display Hardware Test
+        RUN_TEST(test_display_driver_hardware);
     (void)pvParameters;
     
     // Simple task that just delays and exits
@@ -195,7 +222,7 @@ void test_button_response_time(void) {
     gpio_config_t io_conf = {
         .pin_bit_mask = (1ULL << BUTTON_GPIO),
         .mode = GPIO_MODE_INPUT,
-        .pull_up_en = GPIO_PULLUP_ENABLE,
+        .pull_up_en = GPIO_PULLUP_DISABLE, // GPIO37 is input-only, no internal PU
         .pull_down_en = GPIO_PULLDOWN_DISABLE,
         .intr_type = GPIO_INTR_DISABLE
     };
