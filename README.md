@@ -6,7 +6,8 @@ This project was developed in a single day using AI coding assistants, mainly Cl
 
 ## The Final Game
 
-![A819D1FE-5F97-4C31-9DF7-FCBF850E1721_1_206_a](https://github.com/user-attachments/assets/fd75589e-35ee-4524-b546-6e07231a9814)
+https://github.com/user-attachments/assets/85a83d25-3654-4351-989a-6ffb39f1b769
+
 
 ## Development Workflow
 This will be a test driven development project. We will only test to the requirements, not testing implementation details of the code. We must be able to completely refactor the code with none of the tests breaking or changing.
