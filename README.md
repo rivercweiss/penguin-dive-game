@@ -5,9 +5,13 @@ This project is a one button game called Diving Penguin. Diving Penguin is simil
 This project was developed in a single day using AI coding assistants, mainly Claude. This readme was mainly to kick off the tools. It is very cool to see what these tools can do.
 
 ## The Final Game
+The game runs on the ESP32, and also has a test implementation in simulation.
 
-https://github.com/user-attachments/assets/85a83d25-3654-4351-989a-6ffb39f1b769
+https://github.com/user-attachments/assets/85a83d25-3654-4351-989a-6ffb39f1b769 
 
+Simulation screenshot:
+
+<img width="543" height="987" alt="image" src="https://github.com/user-attachments/assets/02f0ff3e-94a1-429c-9da8-40e98c5c81e5" />
 
 ## Development Workflow
 This will be a test driven development project. We will only test to the requirements, not testing implementation details of the code. We must be able to completely refactor the code with none of the tests breaking or changing.
