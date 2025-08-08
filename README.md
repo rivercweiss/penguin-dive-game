@@ -1,10 +1,17 @@
 # Project Overview
-This project is a one button game called Diving Penguin. Diving Penguin is similar to Flappy Bird, but instead of a bird flying over pipes, this game will have a penguin diving under ice pillars. 
+This project is a one button game called Diving Penguin. Diving Penguin is similar to Flappy Bird, but instead of a bird flying over pipes, this game has a penguin diving under ice pillars. 
+
+# Development
+This project was developed in a single day using AI coding assistants, mainly Claude. This readme was mainly to kick off the tools. It is very cool to see what these tools can do.
+
+## The Final Game
+
+![A819D1FE-5F97-4C31-9DF7-FCBF850E1721_1_206_a](https://github.com/user-attachments/assets/fd75589e-35ee-4524-b546-6e07231a9814)
 
 ## Development Workflow
-This will be a test driven development project. We will ONLY test to the requirements, NEVER testing implementation details of the code. We MUST be able to completely refactor the code with NONE of the tests breaking or changing.
+This will be a test driven development project. We will only test to the requirements, not testing implementation details of the code. We must be able to completely refactor the code with none of the tests breaking or changing.
 
-We are using Claude to develop this project, so we must be able to emulate the code and visual output for Claude to inspect and run test on. We are planning to use LVGL + SDL for this purpose, with QEMU if needed for core logic.
+We are using Claude and various other AI tools to develop this project, so we must be able to emulate the code and visual output for Claude to inspect and run test on.
 
 ## Hardware
 The game will be implemented on an ESP32  m5stickc plus device. This device has documentation here: https://docs.m5stack.com/en/core/m5stickc_plus
