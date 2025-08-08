@@ -45,6 +45,18 @@ The game will be implemented on an ESP32  m5stickc plus device. This device has 
 
 The main components of the device we are interested in are the LCD screen: a 1.14 inch, 135 x 240 Colorful TFT LCD, ST7789v2: and button A, connected to GPIO37. This button is always referred to simply as the button.
 
+### 135 x 240 Colorful TFT LCD, ST7789v2 Specifics
+Color TFT Screen
+Driver Chip: ST7789v2
+Resolution: 135 x 240
+Pinout:
+TFT_MOSI, GPIO15
+TFT_CLK, GPIO13
+TFT_DC, GPIO23
+TFT_RST, GPIO18
+TFT_CS, GPIO5
+A reference implentation is in the example_display folder.
+
 ## Key Gameplay Requirements
 
 ### Game Objective

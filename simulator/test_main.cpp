@@ -13,10 +13,13 @@
         } \
     } while(0)
 
+
+extern "C" {
 #include "game_engine.h"
 #include "penguin_physics.h"
 #include "ice_pillars.h"
 #include "display_driver.h"
+}
 
 int test_integration_game_flow() {
     printf("\n=== Integration Test: Complete Game Flow ===\n");

@@ -157,6 +157,8 @@ void test_esp32_memory_allocation(void) {
         vTaskDelay(pdMS_TO_TICKS(1000));
 
         display_driver_deinit(&ctx);
+    }
+
     // Free memory
     free(test_buffer);
     

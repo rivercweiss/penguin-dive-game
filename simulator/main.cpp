@@ -3,10 +3,13 @@
 #include <stdbool.h>
 #include <SDL2/SDL.h>
 
+
+extern "C" {
 #include "game_engine.h"
 #include "penguin_physics.h"
 #include "ice_pillars.h"
 #include "display_driver.h"
+}
 
 #define WINDOW_WIDTH 540   // 4x scale of 135
 #define WINDOW_HEIGHT 960  // 4x scale of 240
@@ -118,7 +121,7 @@ static void render_frame(simulator_context_t* sim_ctx, display_context_t* displa
         // Copy framebuffer to SDL texture row by row
         for (int y = 0; y < DISPLAY_HEIGHT; y++) {
             memcpy((uint8_t*)pixels + y * pitch,
-                   (uint8_t*)display_ctx->framebuffer + y * DISPLAY_WIDTH * sizeof(uint16_t),
+                   (uint8_t*)display_ctx->front_buffer + y * DISPLAY_WIDTH * sizeof(uint16_t),
                    DISPLAY_WIDTH * sizeof(uint16_t));
         }
         SDL_UnlockTexture(sim_ctx->texture);
@@ -201,7 +204,7 @@ int main(int argc, char* argv[]) {
     
     simulator_context_t sim_ctx = {0};
     display_context_t display_ctx = {0};
-    game_context_t game_ctx = {0};
+    game_context_t game_ctx;
     penguin_t penguin = {0};
     ice_pillars_context_t pillars_ctx = {0};
     

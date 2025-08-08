@@ -3,6 +3,10 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define SCREEN_WIDTH 135
 #define SCREEN_HEIGHT 240
 #define PENGUIN_WIDTH 20
@@ -27,3 +31,7 @@ bool penguin_physics_is_at_screen_edge(penguin_t* penguin);
 void penguin_physics_constrain_to_screen(penguin_t* penguin);
 int penguin_physics_get_screen_x(penguin_t* penguin);
 int penguin_physics_get_screen_y(penguin_t* penguin);
+
+#ifdef __cplusplus
+}
+#endif

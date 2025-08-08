@@ -3,6 +3,10 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define SCREEN_WIDTH 135
 #define SCREEN_HEIGHT 240
 #define MAX_PILLARS 4
@@ -39,3 +43,7 @@ void ice_pillars_remove_offscreen(ice_pillars_context_t* ctx);
 int ice_pillars_get_active_count(ice_pillars_context_t* ctx);
 ice_pillar_t* ice_pillars_get_pillar(ice_pillars_context_t* ctx, int index);
 void ice_pillars_reset(ice_pillars_context_t* ctx);
+
+#ifdef __cplusplus
+}
+#endif

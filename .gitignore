@@ -4,6 +4,7 @@ build/
 build_test_game_engine/
 build_test_penguin_physics/
 build_tests/
+managed_components/
 *.o
 *.obj
 *.elf

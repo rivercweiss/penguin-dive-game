@@ -3,6 +3,10 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef enum {
     GAME_STATE_START,
     GAME_STATE_PLAYING,
@@ -22,9 +26,14 @@ void game_engine_init(game_context_t* ctx);
 void game_engine_update(game_context_t* ctx);
 void game_engine_start_game(game_context_t* ctx);
 void game_engine_end_game(game_context_t* ctx);
+
 void game_engine_restart_game(game_context_t* ctx);
 bool game_engine_is_collision(game_context_t* ctx, int penguin_x, int penguin_y, int penguin_width, int penguin_height,
                              int pillar_x, int pillar_y, int pillar_width, int pillar_height);
 bool game_engine_is_screen_edge_collision(game_context_t* ctx, int penguin_x, int penguin_y, int penguin_width, int penguin_height);
 void game_engine_update_score(game_context_t* ctx);
 float game_engine_get_difficulty_multiplier(game_context_t* ctx);
+
+#ifdef __cplusplus
+}
+#endif

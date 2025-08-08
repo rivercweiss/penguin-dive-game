@@ -3,7 +3,8 @@
 #include <stdlib.h>
 
 #define BASE_SCROLL_SPEED 0.8f
-#define BASE_SPAWN_INTERVAL 480
+// Spawn a pillar roughly every 3 seconds at 60 FPS (then scales with difficulty)
+#define BASE_SPAWN_INTERVAL 180
 
 static uint32_t pseudo_random_seed = 12345;
 
@@ -29,6 +30,8 @@ void ice_pillars_init(ice_pillars_context_t* ctx) {
     memset(ctx, 0, sizeof(ice_pillars_context_t));
     ctx->scroll_speed = BASE_SCROLL_SPEED;
     ctx->spawn_interval = BASE_SPAWN_INTERVAL;
+    // Start spawn timer near the threshold so the first pillar appears sooner (~1s)
+    ctx->spawn_timer = (BASE_SPAWN_INTERVAL > 60) ? (BASE_SPAWN_INTERVAL - 60) : (BASE_SPAWN_INTERVAL / 2);
     ctx->difficulty_multiplier = 1.0f;
     pseudo_random_seed = 12345; // Reset for consistent testing
     for (int i = 0; i < MAX_PILLARS; i++) {

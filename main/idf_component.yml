@@ -1,0 +1,4 @@
+## IDF Component Manager Manifest File
+dependencies:
+  lvgl/lvgl: ^8.4.0
+  m5stack/m5unified: ^0.2.7
